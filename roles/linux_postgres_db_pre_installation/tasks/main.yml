@@ -1,0 +1,155 @@
+---
+
+## Required Pacakges Installation ##
+
+- name: install wget
+  become: yes
+  become_user: root
+  yum:
+    name: wget
+    state: present
+
+- name: install curl
+  become: yes
+  become_user: root
+  yum:
+    name: curl
+    state: present
+
+- name: install tar
+  become: yes
+  become_user: root
+  yum:
+    name: tar
+    state: present
+
+- name: install zip
+  become: yes
+  become_user: root
+  yum:
+    name: zip
+    state: present
+
+- name: install python
+  become: yes
+  become_user: root
+  yum:
+    name: python-psycopg2
+    state: present
+
+- name: install bison.x86_64
+  become: yes
+  become_user: root
+  yum:
+    name: bison.x86_64
+    state: present
+
+- name: install flex.x86_64
+  become: yes
+  become_user: root
+  yum:
+    name: flex.x86_64
+    state: present
+
+- name: install readline.x86_64
+  become: yes
+  become_user: root
+  yum:
+    name: readline.x86_64
+    state: present
+
+- name: install readline-devel.x86_64
+  become: yes
+  become_user: root
+  yum:
+    name: readline-devel.x86_64
+    state: present
+
+- name: install zlib.x86_64
+  become: yes
+  become_user: root
+  yum:
+    name: zlib.x86_64
+    state: present
+
+- name: install zlib-devel.x86_64
+  become: yes
+  become_user: root
+  yum:
+    name: zlib-devel.x86_64
+    state: present
+
+- name: install gcc.x86_64
+  become: yes
+  become_user: root
+  yum:
+    name: gcc.x86_64
+    state: present
+
+- name: install openssl-devel.x86_6
+  become: yes
+  become_user: root
+  yum:
+    name: openssl-devel.x86_6
+    state: present
+
+## Add Postgres User
+
+- name: Ensure group "postgres" exists
+  group:
+    name: postgres
+    state: present
+    
+- name: Add the user 'postgres' a primary group of 'postgres'
+  user:
+    name: postgres
+    comment: DB PostgreSQL
+    group: postgres
+    home: /postgres/admin/home
+    shell: /bin/bash
+
+## Create Directories
+- name: create directory postgres & postgres_log
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0750
+  with_items:
+    - /postgres
+    - /postgres_log
+
+- name: create directory pgdata & pgbackup
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0700
+  with_items:
+    - /pgdata
+    - /pgbackup
+    
+## Create Keys for postgres user
+- name: Generate SSH Key for postgres user
+  command : ssh-keygen -b 2048 -q -t rsa -f /postgres/admin/home/.ssh/id_rsa.pub -C "" -N ""
+
+- name: Deploy SSH Key for postgres user
+   authorized_key: 
+     user: postgres
+     key: "{{ lookup('file', '/postgres/admin/home/.ssh/id_rsa.pub') }}"
+     state: present
+     
+## Add /etc/hosts file entries
+- name: Update /etc/hosts from inventory
+  lineinfile: dest=/etc/hosts regexp='.*{{item}}$' line='{{hostvars[item].ansible_default_ipv4.address}} {{item}}' state=present
+  with_items: '{{groups.all}}'
+  tags:
+    - hosts
+    
+## se linux disable
+- name: se linux disable
+  command: sudo sed -i "s/SELINUXTYPE=targeted/SELINUX=permissive/" /etc/selinux/config
+  
+

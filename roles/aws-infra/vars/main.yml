@@ -1,0 +1,26 @@
+
+
+# credentials for AWS (no, they aren't real...)
+aws_region: us-east-2
+
+aws_access_key:
+
+aws_secret_key:
+
+#vpc details
+
+vpc_name: Ansible-vpc
+
+vpc_dns_zone: Ansible
+
+vpc_cidr: 10.0.0.0/16
+
+subnet_cidr: 10.0.0.0/24
+
+subnet_name: Ansible-PubSub
+
+igw_name: Ansible-IGW
+
+route_name: Ansible-PubRoute
+
+keypair_name: 

@@ -1,0 +1,37 @@
+---
+
+- name: install postgresql96
+  become: yes
+  become_user: root
+  yum:
+    name: postgresql96
+    state: present
+
+- name: install postgresql96
+  become: yes
+  become_user: root
+  yum:
+    name: postgresql96
+    state: present
+
+- name: install libpq-dev
+  become: yes
+  become_user: root
+  yum:
+    name: postgresql-devel
+    state: present
+
+- name: Setup Db
+  become: yes
+  become_user: root
+  command: postgresql-setup initdb
+
+- name: Start PostgreService
+  systemd:
+    state: started
+    name: postgresql
+
+- name : enable postgresql
+  systemd:
+    name: postgresql
+    enabled: yes
