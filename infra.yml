@@ -7,15 +7,15 @@
   - aws-infra
 
 
-#- name: Install Postgresql
-#  hosts: Postgres
-#  gather_facts: false
-#  become: yes
-#  become_method: sudo
-#  roles:
-#    - linux_postgres_db_add_devops_user
-#    - linux_postgres_db_pre_installation
-#    - linux_postgres_db_installation
-#    - linux_postgres_db_cretion
+- name: Install Postgresql
+  hosts: 
+  gather_facts: false
+  become: yes
+  become_method: sudo
+  roles:
+    - linux_postgres_db_add_devops_user
+    - linux_postgres_db_pre_installation
+    - linux_postgres_db_installation
+
     
 
