@@ -1,0 +1,8 @@
+#!/bin/bash
+
+psql --port=6232 postgres
+
+CREATE USER repmgr;
+ALTER USER repmgr WITH SUPERUSER;
+CREATE DATABASE repmgr OWNER repmgr;
+ALTER USER repmgr SET search_path TO repmgr, "\$user", public;

@@ -1,37 +1,113 @@
 ---
+- name: download postgresql v10.5 tar
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  get_url:
+    url: https://ftp.postgresql.org/pub/source/v10.5/postgresql-10.5.tar.gz
+    dest: /postgres/install
+    mode: 0750
 
-- name: install postgresql96
+- name: download repmgr 4.1.1 tar
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  get_url:
+    url: https://repmgr.org/download/repmgr-4.1.1.tar.gz
+    dest: /postgres/install
+    mode: 0750
+
+- name: Extract postgres 10.5 tar
+  become: yes
+  become_user: postgres
+  unarchive:
+    src: /postgres/install/postgresql-10.5.tar.gz
+    dest: /postgres/install/
+
+- name: Extract repmgr 4.1.1 tar
+  become: yes
+  become_user: postgres
+  unarchive:
+    src: /postgres/install/repmgr-4.1.1.tar.gz
+    dest: /postgres/install/
+
+- name: Configure postgres
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  shell: /postgres/install/postgresql-10.5/configure --prefix=/postgres/system/pgsql105 --with-openssl && make install
+
+  
+- name: create link /system/pqsql -> for scripting and Enviroment
+  become: yes
+  become_user: postgres
+  #file:
+   # src: /postgres/system/pgsql
+   # dest: pgsql105
+   # state: link
+  command: ln -nfs pgsql105 /postgres/system/pgsql
+
+- name: Configure repmgr
   become: yes
   become_user: root
-  yum:
-    name: postgresql96
+  become_method: sudo
+  environment:
+    PATH: "/postgres/system/pgsql/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "/postgres/system/pgsql/lib:$LD_LIBRARY_PATH"
+  shell: /postgres/install/repmgr-4.1.1/configure && make install
+
+- name: Initialize Db
+  become: yes
+  become_user: postgres
+  environment:
+    PATH: "/postgres/system/pgsql/bin:{{ ansible_env.PATH }}"
+    PGDATA: "/pgdata/pgdata01"
+  command: initdb -D /pgdata/pgdata01
+
+- name: Install unit file
+  sudo: true
+  copy: src=../templates/postgresql.service dest=/etc/systemd/system/ owner=root mode=644
+  notify:
+    - reload systemd
+    
+- template:
+    src: postgresql.conf.j2
+    dest: /pgdata/pgdata01/postgresql.conf
+    owner: postgres
+    group: postgres
+    mode: 0600
+    force: yes
+
+- template:
+    src: pg_hba.conf.j2
+    dest: /pgdata/pgdata01/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: 0600
+    force: yes
+
+- name: add sudo users for postgresql service
+  lineinfile:
+    path: /etc/sudoers
     state: present
-
-- name: install postgresql96
-  become: yes
-  become_user: root
-  yum:
-    name: postgresql96
-    state: present
-
-- name: install libpq-dev
-  become: yes
-  become_user: root
-  yum:
-    name: postgresql-devel
-    state: present
-
-- name: Setup Db
-  become: yes
-  become_user: root
-  command: postgresql-setup initdb
-
-- name: Start PostgreService
-  systemd:
-    state: started
-    name: postgresql
+    regexp: '^%wheel\s'
+    insertafter: '^%wheel'
+    line: "{{ item }}"    
+    validate: '/usr/sbin/visudo -cf %s'
+  with_items:
+    - '%postgres ALL=(root) NOPASSWD: /usr/bin/systemctl reload postgres*'
+    - '%postgres ALL=(root) NOPASSWD: /usr/bin/systemctl start postgres*'
+    - '%postgres ALL=(root) NOPASSWD: /usr/bin/systemctl stop postgres*'
+    - '%postgres ALL=(root) NOPASSWD: /usr/bin/systemctl restart postgres*'
+    - '%postgres ALL=(root) NOPASSWD: /usr/bin/systemctl status postgres*'
+    - '%postgres ALL=(root) NOPASSWD: /bin/bin/journalctl'
 
 - name : enable postgresql
   systemd:
     name: postgresql
     enabled: yes
+
+- name: Start PostgreService
+  systemd:
+    state: started
+    name: postgresql

@@ -2,95 +2,9 @@
 
 ## Required Pacakges Installation ##
 
-- name: install wget
-  become: yes
-  become_user: root
-  yum:
-    name: wget
-    state: present
-
 - name: install curl
-  become: yes
-  become_user: root
   yum:
-    name: curl
-    state: present
-
-- name: install tar
-  become: yes
-  become_user: root
-  yum:
-    name: tar
-    state: present
-
-- name: install zip
-  become: yes
-  become_user: root
-  yum:
-    name: zip
-    state: present
-
-- name: install python
-  become: yes
-  become_user: root
-  yum:
-    name: python-psycopg2
-    state: present
-
-- name: install bison.x86_64
-  become: yes
-  become_user: root
-  yum:
-    name: bison.x86_64
-    state: present
-
-- name: install flex.x86_64
-  become: yes
-  become_user: root
-  yum:
-    name: flex.x86_64
-    state: present
-
-- name: install readline.x86_64
-  become: yes
-  become_user: root
-  yum:
-    name: readline.x86_64
-    state: present
-
-- name: install readline-devel.x86_64
-  become: yes
-  become_user: root
-  yum:
-    name: readline-devel.x86_64
-    state: present
-
-- name: install zlib.x86_64
-  become: yes
-  become_user: root
-  yum:
-    name: zlib.x86_64
-    state: present
-
-- name: install zlib-devel.x86_64
-  become: yes
-  become_user: root
-  yum:
-    name: zlib-devel.x86_64
-    state: present
-
-- name: install gcc.x86_64
-  become: yes
-  become_user: root
-  yum:
-    name: gcc.x86_64
-    state: present
-
-- name: install openssl-devel.x86_6
-  become: yes
-  become_user: root
-  yum:
-    name: openssl-devel.x86_6
+    name: ['wget', 'curl', 'tar', 'zip', 'python-psycopg2', 'bison.x86_64', 'flex.x86_64', 'readline.x86_64', 'readline-devel.x86_64', 'zlib.x86_64', 'zlib-devel.x86_64', 'gcc.x86_64', 'openssl-devel.x86_64'] 
     state: present
 
 ## Add Postgres User
@@ -99,15 +13,16 @@
   group:
     name: postgres
     state: present
-    
+
+
 - name: Add the user 'postgres' a primary group of 'postgres'
   user:
     name: postgres
     comment: DB PostgreSQL
-    group: postgres
-    home: /postgres/admin/home
+    group: postgres   
     shell: /bin/bash
 
+    
 ## Create Directories
 - name: create directory postgres & postgres_log
   file:
@@ -119,6 +34,16 @@
   with_items:
     - /postgres
     - /postgres_log
+    - /postgres/admin
+    - /postgres/admin/config
+    - /postgres/admin/home
+    - /postgres/admin/home/.ssh
+    - /postgres/admin/log
+    - /postgres/admin/scripts
+    - /postgres/install
+    - /postgres/system
+    - /postgres/system/pgsql105
+     
 
 - name: create directory pgdata & pgbackup
   file:
@@ -130,13 +55,26 @@
   with_items:
     - /pgdata
     - /pgbackup
+    - /pgbackup/backup01
+    - /pgbackup/backup01/WAL
+    - /pgdata/pgdata01
+    - /pgdata/temp
+
+- name: change  user 'postgres' home
+  user:
+    name: postgres
+    home: /postgres/admin/home
+
     
 ## Create Keys for postgres user
-- name: Generate SSH Key for postgres user
-  command : ssh-keygen -b 2048 -q -t rsa -f /postgres/admin/home/.ssh/id_rsa.pub -C "" -N ""
+
+- name: generate shh keys
+  become: yes
+  become_user: postgres
+  command: ssh-keygen -b 2048 -q -t rsa -f /postgres/admin/home/.ssh/id_rsa -C "" -N ""
 
 - name: Deploy SSH Key for postgres user
-   authorized_key: 
+  authorized_key: 
      user: postgres
      key: "{{ lookup('file', '/postgres/admin/home/.ssh/id_rsa.pub') }}"
      state: present

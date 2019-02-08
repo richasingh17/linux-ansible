@@ -1,2 +1,7 @@
 ---
+
 # handlers file for linux_postgres_db_installation
+
+- name: reload systemd
+  sudo: yes
+  command: systemctl daemon-reload

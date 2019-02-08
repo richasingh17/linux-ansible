@@ -1,0 +1,12 @@
+   node_id=1
+    node_name={{ master }}
+    conninfo='host={{ master }} port=6232 user=repmgr dbname=repmgr connect_timeout=2'
+    data_directory='/pgdata/pgdata01'
+    #failover=automatic
+    #promote_command='/postgres/pgsql/bin/repmg promote -f /postgres/pgsql/etc/repmgr.conf --log-to-file'
+    #follow_command='/postgres/pgsql/bin/repmgr standby follow -f /postgres/pgsql/etc/repmgr.conf --log-to-file --upstream-node-id=%n'
+    #service_start_command = 'sudo /usr/bin/systemctl start postgresql.service'
+    #service_stop_command = 'sudo /usr/bin/systemctl stop postgresql.service'
+    #service_restart_command = 'sudo /usr/bin/systemctl restart postgresql.service'
+    #service_reload_command = 'sudo /usr/bin/systemd postgresql.service'
+    #service_promote_command = ''

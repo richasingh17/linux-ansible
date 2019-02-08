@@ -1,0 +1,22 @@
+---
+
+- name: testing
+  hosts: Master
+  gather_facts: true
+  become: yes
+  become_method: sudo
+  become_user: root
+
+  tasks:
+  - name: set facts  
+    set_fact:
+      master: 10.0.0.207
+      standby: 10.0.0.209
+  
+  - name: debug
+    debug:
+      var: ansible_env.PATH
+  
+  - name: include role
+    include_role:
+      name: linux_postgres_db_setup_master

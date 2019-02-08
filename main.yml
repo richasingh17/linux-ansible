@@ -1,0 +1,38 @@
+#playbook for creating PostgreSQL HA Cluster With Infra on AWS.
+
+- name: Create AWS Instance
+  hosts: localhost
+  gather_facts: true
+  roles:
+  - linux_postgres_db_infra_creation
+
+
+- name: Install Postgresql on all Nodes
+  hosts: all
+  gather_facts: true
+  become: yes
+  become_method: sudo
+  become_user: root
+  roles:
+    - linux_postgres_db_pre_installation
+    - linux_postgres_db_installation
+    
+- name: Setup Master Node
+  hosts: Master
+  gather_facts: true
+  become: yes
+  become_method: sudo
+  become_user: root
+  roles:
+    - linux_postgres_db_setup_master
+    - linux_postgres_db_cretion
+    
+- name: Setup Standby Node
+  hosts: Standby
+  gather_facts: true
+  become: yes
+  become_method: sudo
+  become_user: root
+  roles:
+    - linux_postgres_db_setup_standby
+

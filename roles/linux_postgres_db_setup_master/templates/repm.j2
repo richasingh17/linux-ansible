@@ -1,0 +1,4 @@
+#!/bin/bash
+psql -h localhost -u postgres psql postgres
+
+GRANT ALL PRIVILEGES ON DATABASE "repmgr" to postgres;
