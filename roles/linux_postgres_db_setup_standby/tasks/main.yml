@@ -41,6 +41,11 @@
     PATH: "/postgres/system/pgsql/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "/postgres/system/pgsql/lib:$LD_LIBRARY_PATH"
 
+- name: Start PostgreService
+  systemd:
+    state: restarted
+    name: postgresql
+
 - name: Register As Standby
   become: yes
   become_user: postgres
