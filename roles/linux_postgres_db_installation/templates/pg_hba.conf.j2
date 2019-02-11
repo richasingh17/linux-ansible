@@ -24,3 +24,5 @@
     host    repmgr        postgres    {{ hostvars['localhost']['master'] }}/24       trust
     host    repmgr        postgres    {{ hostvars['localhost']['standby'] }}/24       trust
  
+    host    all           all         ::1/128                trust
+    host    all           all         127.0.0.1/32          trust 

@@ -19,15 +19,6 @@
     group: root
     mode: 'u=rwx,go=rx'
 
-- name: make .bash_profile file
-  file: state=touch path=/postgres/admin/home/.bash_profile mode=644
-
-- name: add path to postgre bas profile
-  become: yes
-  become_user: postgres
-  become_method: sudo
-  shell: export PATH=/postgres/system/pgsql/bin:$PATH && export PGDATA=/pgdata/pgdata01 && export LD_LIBRARY_PATH=/postgres/system/pgsql/lib:$LD_LIBRARY_PATH && source /postgres/admin/home/.bash_profile
-
 - name: execute the shell script for repmgr user
   command: sh /home/rep_user.sh
   environment:
@@ -62,5 +53,5 @@
     mode: 'u=rwx,go=rx'
 
 - name: execute the shell script
-  command: sudo sh /home/repm.sh
+  command: sh /home/repm.sh
 

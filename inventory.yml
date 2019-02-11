@@ -1,7 +1,7 @@
 ---
 [Master]
-18.224.67.69  ansible_ssh_private_key_file=/root/linux-ansible/roles/linux_postgres_db_infra_creation/newkey.pem ansible_user=ec2-user
+18.191.113.128  ansible_ssh_private_key_file=/root/linux-ansible/roles/linux_postgres_db_infra_creation/newkey.pem ansible_user=ec2-user
 
 [Standby]
-3.16.76.99 ansible_ssh_private_key_file=/root/linux-ansible/roles/linux_postgres_db_infra_creation/newkey.pem ansible_user=ec2-user
+3.16.130.0 ansible_ssh_private_key_file=/root/linux-ansible/roles/linux_postgres_db_infra_creation/newkey.pem ansible_user=ec2-user
 

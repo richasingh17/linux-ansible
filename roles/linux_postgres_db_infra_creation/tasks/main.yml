@@ -112,11 +112,6 @@
     master: "{{ ec2.instances[0]['private_ip'] }}"
     standby: "{{ ec2.instances[1]['private_ip'] }}"
 
-- debug:
-    var: master
-
-- debug:
-    var: standby
 
 - name: wait for the instances to boot by checking the ssh port
   wait_for: 

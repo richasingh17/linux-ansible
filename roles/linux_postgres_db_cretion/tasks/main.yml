@@ -4,18 +4,7 @@
 
 - name: Ensure the PostgreSQL service is runnin
   service:
-    name: postgresql-9.6
-    state: stopped
-
-- replace:
-    path: /var/lib/pgsql/9.6/data/pg_hba.conf
-    regexp: 'peer'
-    replace: 'trust'
-    backup: yes
-
-- name: Ensure the PostgreSQL service is runnin
-  service:
-    name: postgresql-9.6
+    name: postgresql
     state: started
 
 - name: creation of database
@@ -25,10 +14,6 @@
   register:    whoami
 
 - debug: msg="{{whoami.stdout}}"
-#- name: shell command psql
-#  shell: psql
-#  become_user: postgres
-
 
 - name: creation of db
   postgresql_db:
@@ -44,11 +29,8 @@
     mode: 'u=rwx,go=rx'
 
 - name: execute the shell script
-  command: sudo sh /home/db.sh
+  command: sh /home/db.sh
   
-#- name: shell command psql to create db and tables and values
-#  shell: psql && \c Sample_BMW_DB && CREATE TABLE POC_BMW (id INTEGER PRIMARY KEY, name VARCHAR) && INSERT INTO POC_BMW VALUES (1,'ABC') 
-#  become_user: postgres
 
 
 

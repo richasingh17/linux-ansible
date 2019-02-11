@@ -1,6 +1,10 @@
 #!/bin/bash
 
-sudo -i -u postgres psql postgres << EOF
+sudo su - postgres -c"echo \"export PGDATA=/pgdata/pgdata01\">> ~/.bash_profile"
+sudo su - postgres -c"echo \"export PATH=/postgres/system/pgsql/bin:$PATH\">> ~/.bash_profile"
+sudo su - postgres -c"source ~/.bash_profile"
+
+sudo -i -u postgres psql -h localhost postgres << EOF
 CREATE USER repmgr;
 ALTER USER repmgr WITH SUPERUSER;
 CREATE DATABASE repmgr OWNER repmgr;

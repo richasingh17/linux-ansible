@@ -1,5 +1,9 @@
 #!/bin/bash
 
+sudo su - postgres -c"echo \"export PGDATA=/pgdata/pgdata01\">> ~/.bash_profile"
+sudo su - postgres -c"echo \"export PATH=/postgres/system/pgsql/bin:$PATH\">> ~/.bash_profile"
+sudo su - postgres -c"sudo source ~/.bash_profile"
+
 sudo printf "CREATE TABLE leads (id INTEGER PRIMARY KEY, name VARCHAR);INSERT INTO leads VALUES (2,'BCD');SELECT * FROM leads;" > createdb.sql
 
 sudo psql -U postgres -d testdb -f createdb.sql
